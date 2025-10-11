@@ -80,5 +80,3 @@ int main() {
 - Preemption via virtual timer; ensure signal handlers are async-signal-safe
 - Stacks and guard pages may vary by platform
 
-
-> TODO: Add a LICENSE file.
