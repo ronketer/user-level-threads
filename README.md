@@ -1,82 +1,32 @@
-# UThreads — User-Level Threads Library
+# UThreads — Preemptive User-Level Threads Library
 
-This project implements a user-level threads library (`uthreads`), developed as part of the Operating Systems course at The Hebrew University. It provides preemptive round-robin scheduling with `SIGVTALRM` and context switching using `sigsetjmp/siglongjmp`.
-
----
-
-## Overview
-
-- Preemptive round-robin scheduling with configurable quantum
-- Thread states: `RUNNING`, `READY`, `BLOCKED`, `SLEEPING`
-- Ready-queue scheduling, efficient TID management
-- Context switches with `sigsetjmp/siglongjmp`
+A high-performance C++ library implementing user-level threading (`uthreads`) with preemptive round-robin scheduling. This project demonstrates low-level systems architecture, manual context switching, and sophisticated signal-based concurrency management.
 
 <p align="center">
   <img src="images/ThreadStateDiagram.png" width="85%" alt="Thread State Diagram"/>
 </p>
 
-## Public API
 
-Defined in [uthreads.h](uthreads.h):
 
-- `uthread_init(int quantum_usecs)`
-- `uthread_spawn(void (*f)(void))`
-- `uthread_terminate(int tid)`
-- `uthread_block(int tid)`
-- `uthread_resume(int tid)`
-- `uthread_sleep(int num_quantums)`
-- `uthread_get_tid(void)`
-- `uthread_get_total_quantums(void)`
-- `uthread_get_quantums(int tid)`
+## 🛠️ Technical Highlights
 
-> Names above mirror the header; adjust if they differ.
+* **Custom Context Switching:** Implemented manual state saving and restoration using `sigsetjmp` and `siglongjmp` to manage thread execution flows[cite: 3].
+* **Low-Level Memory Management:** Architected thread lifecycle operations, including manual stack allocation and pointer arithmetic, ensuring memory safety and preventing stack overflows[cite: 4].
+* **Preemptive Scheduling:** Engineered a round-robin scheduler using `SIGVTALRM` virtual timers to enforce configurable time quantums across thread states: `RUNNING`, `READY`, `BLOCKED`, and `SLEEPING`[cite: 3].
+* **Thread-Safe Critical Sections:** Utilized signal masking to guard internal state transitions and ensure atomicity during scheduling operations.
 
----
+## 📋 Public API
 
-## File structure
+| Function | Description |
+| :--- | :--- |
+| `uthread_init` | Initializes the library and the main execution thread. |
+| `uthread_spawn` | Creates a new thread with an isolated stack. |
+| `uthread_block/resume` | Manages manual thread state transitions. |
+| `uthread_sleep` | Suspends thread execution for a specific number of quantums. |
 
-- uthreads.cpp — scheduling, states, core logic
-- uthreads.h — public API and constants (`MAX_THREAD_NUM`, `STACK_SIZE`)
-- Makefile — compiles and archives `libuthreads.a`
-- examples/ — minimal usage demos (optional)
-
----
-
-## Build
+## 🏗️ Build & Requirements
+* **Environment:** Linux/Unix (CLI)
+* **Tools:** G++, Make, Standard Pthreads library (for signal management)
 
 ```bash
 make
-```
-
-Outputs a static library `libuthreads.a` and (optionally) example binaries.
-
-## Minimal example
-
-```c
-#include "uthreads.h"
-#include <stdio.h>
-
-void worker() {
-  for (int i = 0; i < 5; ++i) {
-    printf("Worker running (q=%d)\n", uthread_get_quantums(uthread_get_tid()));
-    uthread_sleep(1); // or uthread_yield() if provided
-  }
-}
-
-int main() {
-  uthread_init(50000); // 50ms quantum
-  uthread_spawn(worker);
-  // main thread acts as scheduler entry point
-  while (uthread_get_total_quantums() < 20) { /* spin or work */ }
-  return 0;
-}
-```
-
-> Replace with a real example from your repo if present.
-
-## Notes
-
-- Signal masking is used to guard critical sections
-- Preemption via virtual timer; ensure signal handlers are async-signal-safe
-- Stacks and guard pages may vary by platform
-
