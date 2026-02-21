@@ -10,12 +10,14 @@ A high-performance C++ library implementing user-level threading (`uthreads`) wi
 
 ## 🛠️ Technical Highlights
 
-* **Custom Context Switching:** Implemented manual state saving and restoration using `sigsetjmp` and `siglongjmp` to manage thread execution flows[cite: 3].
-* **Low-Level Memory Management:** Architected thread lifecycle operations, including manual stack allocation and pointer arithmetic, ensuring memory safety and preventing stack overflows[cite: 4].
-* **Preemptive Scheduling:** Engineered a round-robin scheduler using `SIGVTALRM` virtual timers to enforce configurable time quantums across thread states: `RUNNING`, `READY`, `BLOCKED`, and `SLEEPING`[cite: 3].
+* **Custom Context Switching:** Implemented manual state saving and restoration using `sigsetjmp` and `siglongjmp` to manage thread execution flows.
+* **Low-Level Memory Management:** Architected thread lifecycle operations, including manual stack allocation and pointer arithmetic, ensuring memory safety and preventing stack overflows.
+* **Preemptive Scheduling:** Engineered a round-robin scheduler using `SIGVTALRM` virtual timers to enforce configurable time quantums across thread states (`RUNNING`, `READY`, `BLOCKED`, `SLEEPING`).
 * **Thread-Safe Critical Sections:** Utilized signal masking to guard internal state transitions and ensure atomicity during scheduling operations.
 
 ## 📋 Public API
+
+Defined in `uthreads.h`, the library provides a robust interface for thread management:
 
 | Function | Description |
 | :--- | :--- |
@@ -25,8 +27,8 @@ A high-performance C++ library implementing user-level threading (`uthreads`) wi
 | `uthread_sleep` | Suspends thread execution for a specific number of quantums. |
 
 ## 🏗️ Build & Requirements
-* **Environment:** Linux/Unix (CLI)
-* **Tools:** G++, Make, Standard Pthreads library (for signal management)
+* **Environment:** Linux/Unix (CLI) 
+* **Tools:** G++, Make, Standard Pthreads library (for signal management) 
 
 ```bash
 make
